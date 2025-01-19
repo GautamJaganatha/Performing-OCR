@@ -49,6 +49,17 @@ public class DocumentProcessingService {
             // Create OCR file
             String ocrFileName = referenceNumber + "_ocr.txt";
             File ocrFile = new File(storagePath + "/" + ocrFileName);
+
+// Ensure the directory exists
+            File parentDir = ocrFile.getParentFile();
+            if (!parentDir.exists()) {
+                boolean dirsCreated = parentDir.mkdirs();
+                if (!dirsCreated) {
+                    log.error("Failed to create the directory: {}", parentDir.getAbsolutePath());
+                    throw new RuntimeException("Failed to create directory for OCR file");
+                }
+            }
+
             log.debug("Creating OCR file at: {}", ocrFile.getAbsolutePath());
 
             try (FileWriter writer = new FileWriter(ocrFile)) {
