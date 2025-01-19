@@ -10,9 +10,7 @@ import lombok.Generated;
 import java.time.LocalDateTime;
 @Entity
 @Table(name = "documents")
-@Data  // If using Lombok, this will generate getters/setters
 public class Document {
-//    strategy = GenerationType.IDENTITY
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,12 +21,16 @@ public class Document {
     private String clientEmail;
     private LocalDateTime processedDate;
     private Long fileSize;
+    private Integer totalWords;
+
+    @Column(columnDefinition = "TEXT")
+    private String topWords;
 
     @Lob
-    @Column(length = 16777215)  // For MySQL MEDIUMTEXT
+    @Column(length = 16777215)
     private String ocrContent;
 
-    // If not using Lombok, add getters and setters:
+
     public Long getId() {
         return id;
     }
@@ -85,6 +87,22 @@ public class Document {
         this.fileSize = fileSize;
     }
 
+    public Integer getTotalWords() {
+        return totalWords;
+    }
+
+    public void setTotalWords(Integer totalWords) {
+        this.totalWords = totalWords;
+    }
+
+    public String getTopWords() {
+        return topWords;
+    }
+
+    public void setTopWords(String topWords) {
+        this.topWords = topWords;
+    }
+
     public String getOcrContent() {
         return ocrContent;
     }
@@ -92,4 +110,6 @@ public class Document {
     public void setOcrContent(String ocrContent) {
         this.ocrContent = ocrContent;
     }
+
+    // Add getters and setters
 }
