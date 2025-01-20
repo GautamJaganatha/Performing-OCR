@@ -162,11 +162,12 @@ public class EmailMonitoringService {
                 throw new RuntimeException("OCR file not found");
             }
 
+
             log.info("Sending requested document to client");
             emailService.sendEmailWithAttachment(
                     clientEmail,
                     "Requested Document - Ref: " + referenceNumber,
-                    generateMetricsReport(document),
+                    documentProcessingService.generateMetricsReport(document),
                     ocrFile.getAbsolutePath()
             );
             log.info("Document sent successfully");
@@ -175,20 +176,20 @@ public class EmailMonitoringService {
         }
     }
 
-    private String generateMetricsReport(Document document) {
-        log.debug("Generating metrics report for document: {}", document.getReferenceNumber());
-
-        StringBuilder report = new StringBuilder();
-        report.append("Document Details:\n\n");
-        report.append("Reference Number: ").append(document.getReferenceNumber()).append("\n");
-        report.append("Original File Name: ").append(document.getOriginalFileName()).append("\n");
-        report.append("Processing Date: ").append(document.getProcessedDate()).append("\n");
-        report.append("Total Words: ").append(document.getTotalWords()).append("\n");
-        report.append("Top Words: ").append(document.getTopWords()).append("\n\n");
-        report.append("To request this document again, send an email with subject 'Request Document: ")
-                .append(document.getReferenceNumber()).append("'");
-
-        log.debug("Generated metrics report successfully");
-        return report.toString();
-    }
+//    private String generateMetricsReport(Document document) {
+//        log.debug("Generating metrics report for document: {}", document.getReferenceNumber());
+//
+//        StringBuilder report = new StringBuilder();
+//        report.append("Document Details:\n\n");
+//        report.append("Reference Number: ").append(document.getReferenceNumber()).append("\n");
+//        report.append("Original File Name: ").append(document.getOriginalFileName()).append("\n");
+//        report.append("Processing Date: ").append(document.getProcessedDate()).append("\n");
+//        report.append("Total Words: ").append(document.getTotalWords()).append("\n");
+//        report.append("Top Words: ").append(document.getTopWords()).append("\n\n");
+//        report.append("To request this document again, send an email with subject 'Request Document: ")
+//                .append(document.getReferenceNumber()).append("'");
+//
+//        log.debug("Generated metrics report successfully");
+//        return report.toString();
+//    }
 }

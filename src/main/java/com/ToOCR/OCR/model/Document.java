@@ -35,9 +35,7 @@ public class Document {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+
 
     public String getReferenceNumber() {
         return referenceNumber;
@@ -111,5 +109,5 @@ public class Document {
         this.ocrContent = ocrContent;
     }
 
-    // Add getters and setters
+
 }

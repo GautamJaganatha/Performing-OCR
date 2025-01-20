@@ -50,7 +50,7 @@ public class DocumentProcessingService {
             String ocrFileName = referenceNumber + "_ocr.txt";
             File ocrFile = new File(storagePath + "/" + ocrFileName);
 
-// Ensure the directory exists
+
             File parentDir = ocrFile.getParentFile();
             if (!parentDir.exists()) {
                 boolean dirsCreated = parentDir.mkdirs();
@@ -109,18 +109,21 @@ public class DocumentProcessingService {
         }
     }
 
-    private String generateMetricsReport(Document document) {
+
+    public String generateMetricsReport(Document document) {
         log.debug("Generating metrics report for document: {}", document.getReferenceNumber());
-        return String.format(
-                "Document Processing Complete\n\n" +
-                        "Reference Number: %s\n" +
-                        "Total Words: %d\n" +
-                        "Top 10 Words: %s\n\n" +
-                        "You can request this document again by sending an email with subject 'Request Document: %s'",
-                document.getReferenceNumber(),
-                document.getTotalWords(),
-                document.getTopWords(),
-                document.getReferenceNumber()
-        );
+
+        StringBuilder report = new StringBuilder();
+        report.append("Document Details:\n\n");
+        report.append("Reference Number: ").append(document.getReferenceNumber()).append("\n");
+        report.append("Original File Name: ").append(document.getOriginalFileName()).append("\n");
+        report.append("Processing Date: ").append(document.getProcessedDate()).append("\n");
+        report.append("Total Words: ").append(document.getTotalWords()).append("\n");
+        report.append("Top Words: ").append(document.getTopWords()).append("\n\n");
+        report.append("To request this document again, send an email with subject 'Request Document: ")
+                .append(document.getReferenceNumber()).append("'");
+
+        log.debug("Generated metrics report successfully");
+        return report.toString();
     }
 }
