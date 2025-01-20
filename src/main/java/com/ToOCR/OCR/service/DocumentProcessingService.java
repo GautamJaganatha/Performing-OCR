@@ -92,11 +92,11 @@ public class DocumentProcessingService {
 
             // Send email
             log.info("Sending email notification to client: {}", clientEmail);
-            emailService.sendEmailWithAttachment(
+            emailService.sendSecureEmail(
                     clientEmail,
                     "Document Processing Complete - Ref: " + referenceNumber,
                     generateMetricsReport(document),
-                    ocrFile.getAbsolutePath()
+                    ocrFile
             );
             log.info("Email sent successfully");
 
