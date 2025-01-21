@@ -88,24 +88,25 @@ public class EmailMonitoringService {
         String clientEmail = InternetAddress.parse(from)[0].getAddress();
         log.debug("Email from: {}, Subject: {}", clientEmail, subject);
 
+
+
         try {
+
+            // First check if this is a document request
+            if (subject != null && subject.toLowerCase().contains("request document:")) {
+                String referenceNumber = subject.split(":")[1].trim();
+                log.info("Document request received for reference: {}", referenceNumber);
+                handleDocumentRequest(referenceNumber, clientEmail);
+                return;  // Exit after handling document request
+            }
+
             // Get email content and check for password
             String content = getMessageContent(message);
             log.debug("Email content received: {}", content != null ? "Yes" : "No");
             if (content != null) {
                 log.debug("Content length: {}", content.length());
-                log.debug("Content contains 'password :': {}", content.contains("password :"));
             }
 
-            String password = null;
-            if (content != null && content.contains("password :")) {
-                String[] parts = content.split("password :");
-                log.debug("Split parts length: {}", parts.length);
-                if (parts.length > 1) {
-                    password = parts[1].trim().split("\\s+")[0];
-                    log.info("Found password in email content: {}", password);
-                }
-            }
 
             if (message.getContentType().contains("multipart")) {
                 log.info("Found multipart content, checking for ZIP attachment");
@@ -121,13 +122,12 @@ public class EmailMonitoringService {
                         String fileName = bodyPart.getFileName();
                         log.debug("Found attachment: {}", fileName);
 
-                        if (fileName.toLowerCase().endsWith(".zip") && password != null) {
+                        if (fileName.toLowerCase().endsWith(".zip")) {
                             log.info("Processing ZIP attachment with password");
-                            processZipAttachment(bodyPart, password, clientEmail);
+                            processZipAttachment(bodyPart, clientEmail);
                         } else {
                             log.warn("Skipping attachment - ZIP: {}, Password found: {}",
-                                    fileName.toLowerCase().endsWith(".zip"),
-                                    password != null);
+                                    fileName.toLowerCase().endsWith(".zip"));
                         }
                     }
                 }
@@ -195,7 +195,7 @@ public class EmailMonitoringService {
         return null;
     }
 
-    private void processZipAttachment(BodyPart bodyPart, String password, String clientEmail) {
+    private void processZipAttachment(BodyPart bodyPart, String clientEmail) {
         log.info("Starting to process ZIP attachment");
         File zipFile = null;
         File pdfFile = null;
@@ -206,7 +206,7 @@ public class EmailMonitoringService {
             log.info("ZIP file saved temporarily at: {}", zipFile.getAbsolutePath());
 
             // Extract PDF
-            pdfFile = zipService.extractPdfFromZip(zipFile, password);
+            pdfFile = zipService.extractPdfFromZip(zipFile);
             log.info("PDF extracted successfully: {}", pdfFile.getName());
 
             // Process PDF
@@ -246,48 +246,58 @@ public class EmailMonitoringService {
         try {
             Document document = documentRepository.findByReferenceNumber(referenceNumber)
                     .orElseThrow(() -> new RuntimeException("Document not found: " + referenceNumber));
+            log.debug("Document found in database");
 
             File ocrFile = new File(document.getOcrFileName());
             if (!ocrFile.exists()) {
+                log.error("OCR file not found on filesystem: {}", document.getOcrFileName());
                 throw new RuntimeException("OCR file not found");
             }
 
-            // Send secure email with ZIP
+            log.info("Sending requested document to client");
             emailService.sendSecureEmail(
                     clientEmail,
                     "Requested Document - Ref: " + referenceNumber,
-                    documentProcessingService.generateMetricsReport(document),
+                    "Here is your requested document with reference number: " + referenceNumber,
                     ocrFile
             );
-
             log.info("Document sent successfully");
         } catch (Exception e) {
             log.error("Error handling document request: {}", e.getMessage(), e);
-        }
-    }
-    private String extractPasswordFromContent(Message message) throws IOException, MessagingException {
-        String content = getMessageContent(message);
-        if (content != null && content.contains("password :")) {
-            String[] parts = content.split("password :");
-            if (parts.length > 1) {
-                return parts[1].trim().split("\\s+")[0];
-            }
-        }
-        return null;
-    }
-    private void processNewDocument(Message message, String password, String clientEmail)
-            throws MessagingException, IOException {
-        log.info("Processing new document from: {}", clientEmail);
-        Multipart multipart = (Multipart) message.getContent();
-
-        for (int i = 0; i < multipart.getCount(); i++) {
-            BodyPart bodyPart = multipart.getBodyPart(i);
-            if (Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition())) {
-                String fileName = bodyPart.getFileName();
-                if (fileName.toLowerCase().endsWith(".zip")) {
-                    processZipAttachment(bodyPart, password, clientEmail);
-                }
+            try {
+                emailService.sendSimpleEmail(
+                        clientEmail,
+                        "Error Processing Document Request",
+                        "Failed to retrieve document with reference: " + referenceNumber
+                );
+            } catch (Exception ee) {
+                log.error("Failed to send error notification: {}", ee.getMessage());
             }
         }
     }
+//    private String extractPasswordFromContent(Message message) throws IOException, MessagingException {
+//        String content = getMessageContent(message);
+//        if (content != null && content.contains("password :")) {
+//            String[] parts = content.split("password :");
+//            if (parts.length > 1) {
+//                return parts[1].trim().split("\\s+")[0];
+//            }
+//        }
+//        return null;
+//    }
+//    private void processNewDocument(Message message, String password, String clientEmail)
+//            throws MessagingException, IOException {
+//        log.info("Processing new document from: {}", clientEmail);
+//        Multipart multipart = (Multipart) message.getContent();
+//
+//        for (int i = 0; i < multipart.getCount(); i++) {
+//            BodyPart bodyPart = multipart.getBodyPart(i);
+//            if (Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition())) {
+//                String fileName = bodyPart.getFileName();
+//                if (fileName.toLowerCase().endsWith(".zip")) {
+//                    processZipAttachment(bodyPart, clientEmail);
+//                }
+//            }
+//        }
+//    }
 }

@@ -17,7 +17,9 @@ import net.lingala.zip4j.model.enums.EncryptionMethod;
 public class ZipService {
     private static final Logger log = LoggerFactory.getLogger(ZipService.class);
 
-    public File extractPdfFromZip(File zipFile, String password) {
+    public static final String password = "mySecurePassword123";
+
+    public File extractPdfFromZip(File zipFile) {
         log.info("Starting to extract PDF from ZIP file: {}", zipFile.getName());
         try {
             ZipFile secureZip = new ZipFile(zipFile, password.toCharArray());
@@ -41,7 +43,7 @@ public class ZipService {
         }
     }
 
-    public File createSecureZip(File file, String password) {
+    public File createSecureZip(File file) {
         log.info("Creating secure ZIP for file: {}", file.getName());
         try {
             File zipFile = File.createTempFile("secure_", ".zip");

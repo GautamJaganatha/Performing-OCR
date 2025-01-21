@@ -31,18 +31,18 @@ public class EmailService {
         log.info("Preparing to send secure email to: {}", to);
         File zipFile = null;
         try {
-            // Generate password and create secure ZIP
-            String password = zipService.generatePassword();
-            zipFile = zipService.createSecureZip(file, password);
+
+            zipFile = zipService.createSecureZip(file);
             log.debug("Created secure ZIP file");
 
             // Send ZIP file
             MimeMessage message = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
+
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(text + "\n\nPassword will be sent separately.");
+            helper.setText(text);
 
             FileSystemResource fileResource = new FileSystemResource(zipFile);
             helper.addAttachment("document.zip", fileResource);
@@ -50,10 +50,9 @@ public class EmailService {
             emailSender.send(message);
             log.info("Sent ZIP file email successfully");
 
-            String referenceNo = file.getAbsolutePath();
 
             // Send password separately
-            sendPasswordEmail(to, password);
+//            sendPasswordEmail(to, password);
 
         } catch (Exception e) {
             log.error("Failed to send secure email to {}: {}", to, e.getMessage());
@@ -66,16 +65,39 @@ public class EmailService {
         }
     }
 
-    private void sendPasswordEmail(String to, String password) throws MessagingException {
-        log.info("Sending password email to: {}", to);
-        MimeMessage message = emailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, false);
 
-        helper.setTo(to);
-        helper.setSubject("Password for Your Document");
-        helper.setText("Your password is: " + password);
+//    private void sendPasswordEmail(String to, String password) throws MessagingException {
+//        log.info("Sending password email to: {}", to);
+//        MimeMessage message = emailSender.createMimeMessage();
+//        MimeMessageHelper helper = new MimeMessageHelper(message, false);
+//
+//        helper.setTo(to);
+//        helper.setSubject("Password for Your Document");
+//        helper.setText("Your password is: " + password);
+//
+//        emailSender.send(message);
+//        log.info("Password email sent successfully");
+//    }
 
-        emailSender.send(message);
-        log.info("Password email sent successfully");
+
+
+    public void sendSimpleEmail(String to, String subject, String text) throws MessagingException {
+        try {
+            MimeMessage message = emailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(text);
+
+
+            emailSender.send(message);
+
+
+        } catch (Exception e) {
+            log.error("Failed to send email to {}: {}", to, e.getMessage());
+            throw new RuntimeException("Failed to send secure email", e);
+        }
     }
 }
