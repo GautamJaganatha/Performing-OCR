@@ -1,8 +1,4 @@
 package com.ToOCR.OCR.service;
-
-
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
@@ -39,7 +35,6 @@ public class EmailService {
             MimeMessage message = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(text);
@@ -51,9 +46,6 @@ public class EmailService {
             log.info("Sent ZIP file email successfully");
 
 
-            // Send password separately
-//            sendPasswordEmail(to, password);
-
         } catch (Exception e) {
             log.error("Failed to send secure email to {}: {}", to, e.getMessage());
             throw new RuntimeException("Failed to send secure email", e);
@@ -64,6 +56,24 @@ public class EmailService {
             }
         }
     }
+
+    public void sendSimpleEmail(String to, String subject, String text) throws MessagingException {
+        try {
+            MimeMessage message = emailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(text);
+
+            emailSender.send(message);
+
+        } catch (Exception e) {
+            log.error("Failed to send email to {}: {}", to, e.getMessage());
+            throw new RuntimeException("Failed to send secure email", e);
+        }
+    }
+}
 
 
 //    private void sendPasswordEmail(String to, String password) throws MessagingException {
@@ -78,26 +88,3 @@ public class EmailService {
 //        emailSender.send(message);
 //        log.info("Password email sent successfully");
 //    }
-
-
-
-    public void sendSimpleEmail(String to, String subject, String text) throws MessagingException {
-        try {
-            MimeMessage message = emailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(text);
-
-
-            emailSender.send(message);
-
-
-        } catch (Exception e) {
-            log.error("Failed to send email to {}: {}", to, e.getMessage());
-            throw new RuntimeException("Failed to send secure email", e);
-        }
-    }
-}

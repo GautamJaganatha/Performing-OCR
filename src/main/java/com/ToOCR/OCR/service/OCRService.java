@@ -74,3 +74,37 @@ public class OCRService {
         return ocrText.toString();
     }
 }
+
+
+//private final Tesseract tesseract;
+//
+//public OCRService() {
+//    tesseract = new Tesseract();
+//    String datapath = "/usr/local/share/tessdata/";
+//    tesseract.setDatapath(datapath);
+//    tesseract.setLanguage("eng");
+//
+//    log.info("Tesseract initialized with datapath: {}", datapath);
+//}
+//
+//public String performOCR(File pdfFile) throws IOException, TesseractException {
+//    log.info("Starting OCR processing for file: {}", pdfFile.getName());
+//    StringBuilder ocrText = new StringBuilder();
+//
+//    try (PDDocument document = PDDocument.load(pdfFile)) {
+//        PDFRenderer pdfRenderer = new PDFRenderer(document);
+//        int pageCount = document.getNumberOfPages();
+//        log.debug("PDF has {} pages", pageCount);
+//
+//        for (int page = 0; page < pageCount; page++) {
+//            log.debug("Processing page {}/{}", page + 1, pageCount);
+//            BufferedImage image = pdfRenderer.renderImageWithDPI(page, 300);
+//            String pageText = tesseract.doOCR(image);
+//            ocrText.append(pageText).append("\n");
+//            log.debug("Completed OCR for page {}", page + 1);
+//        }
+//    }
+//
+//    log.info("OCR processing completed");
+//    return ocrText.toString();
+//}

@@ -54,8 +54,6 @@ public class ZipService {
             parameters.setEncryptionMethod(EncryptionMethod.AES);
             log.debug("Configured ZIP encryption parameters");
 
-
-
             ZipFile secureZip = new ZipFile(zipFile, password.toCharArray());
             secureZip.addFile(file, parameters);
             log.info("Successfully created encrypted ZIP file");
@@ -65,13 +63,6 @@ public class ZipService {
             log.error("Failed to create secure ZIP: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to create secure ZIP", e);
         }
-    }
-
-    public String generatePassword() {
-        log.debug("Generating secure password");
-        String password = UUID.randomUUID().toString().substring(0, 12);
-        log.debug("Generated password successfully");
-        return password;
     }
 
     public void cleanup(File... files) {
@@ -87,5 +78,12 @@ public class ZipService {
             }
         }
         log.debug("Cleanup completed");
+    }
+
+    public String generatePassword() {
+        log.debug("Generating secure password");
+        String password = UUID.randomUUID().toString().substring(0, 12);
+        log.debug("Generated password successfully");
+        return password;
     }
 }
