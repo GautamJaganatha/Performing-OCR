@@ -12,3 +12,8 @@ Once a PDF is successfully extracted, the system employs advanced OCR (Optical C
 
 
 All this valuable information is persistently stored in a carefully designed MySQL database schema, which maintains document metadata, processing results, and extracted content. The database structure supports efficient querying and retrieval of document information while handling large text content through appropriate data types like MEDIUMTEXT for OCR content and TEXT for analyzed word data.
+
+
+
+
+The entire system is built on the robust Spring Boot framework, incorporating professional software development practices such as comprehensive error handling and detailed logging through SLF4J. Every operation, from file reception to final storage, is meticulously logged, providing clear audit trails and facilitating system monitoring and debugging. The service layer is designed with clear separation of concerns, making the system both maintainable and extensible for future enhancements.
