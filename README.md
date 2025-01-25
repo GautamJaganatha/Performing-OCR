@@ -2,3 +2,8 @@ The Document Processing and Analysis System is a sophisticated enterprise soluti
 
 
 When a user submits an encrypted ZIP file, the system's ZipService component springs into action, utilizing a secure password mechanism to decrypt and extract PDF documents. This extraction process is carefully managed within temporary directories, implementing proper security measures to prevent unauthorized access. The system's architecture ensures that all temporary files are handled securely and cleaned up appropriately after processing.
+
+
+
+
+Once a PDF is successfully extracted, the system employs advanced OCR (Optical Character Recognition) technology to transform the document's content into machine-readable text. This processed text undergoes detailed analysis, including comprehensive word counting and identification of frequently occurring terms, providing valuable insights into document content. The system tracks various metadata points including file sizes, processing timestamps, and reference numbers, creating a complete audit trail of document processing.
