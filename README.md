@@ -7,3 +7,8 @@ When a user submits an encrypted ZIP file, the system's ZipService component spr
 
 
 Once a PDF is successfully extracted, the system employs advanced OCR (Optical Character Recognition) technology to transform the document's content into machine-readable text. This processed text undergoes detailed analysis, including comprehensive word counting and identification of frequently occurring terms, providing valuable insights into document content. The system tracks various metadata points including file sizes, processing timestamps, and reference numbers, creating a complete audit trail of document processing.
+
+
+
+
+All this valuable information is persistently stored in a carefully designed MySQL database schema, which maintains document metadata, processing results, and extracted content. The database structure supports efficient querying and retrieval of document information while handling large text content through appropriate data types like MEDIUMTEXT for OCR content and TEXT for analyzed word data.
